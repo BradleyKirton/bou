@@ -1,0 +1,38 @@
+[project]
+name = "bou"
+version = "0.1.0"
+description = "A build system for django projects (Maybe others too)."
+readme = "README.md"
+authors = [
+    { name = "Bradley Kirton", email = "bradleykirton@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+     "pluggy",
+    "Jinja2",
+]
+
+[project.scripts]
+bou = "bou.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.8.22,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py313"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+[tool.uv.workspace]
+members = [
+    "example",
+]

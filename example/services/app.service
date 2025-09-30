@@ -1,0 +1,16 @@
+[Unit]
+Description=Example application server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+WorkingDirectory={{ working_dir_path }}
+ExecStart={{ granian_path }} --host=127.0.0.1 --port=8000 --interface=asginl config.asgi:application
+ExecReload=/bin/kill -HUP $MAINPID
+EnvironmentFile={{ env_path }}
+
+[Install]
+WantedBy=multi-user.target

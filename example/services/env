@@ -1,0 +1,5 @@
+DJANGO_ENV="prd"
+DJANGO_SETTINGS_MODULE="config.settings"
+DEBUG=False
+STATIC_ROOT={{ static_root_path }}
+TAILWINDCSS_VERSION="{{ tailwindcss_version }}"

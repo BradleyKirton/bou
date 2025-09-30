@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+while read oldrev newrev ref; do
+	if [[ $ref =~ .*/main$ ]];
+	then
+		pusher=$(git config --get remote.pushuser)
+		pusher=${pusher:-$USER}
+
+		# Start a subshell so that GIT_DIR is not unset in the rest of the script.
+		(
+		    unset GIT_DIR
+		    {{ bou_cli_path }} \
+		    	build \
+		    	-r {{ repo_path  }} \
+		    	-b {{ builds_path  }} \
+		    	-d {{ db_path }} \
+		    	-B {{ build_file_path }} \
+		    	$ref $pusher
+
+		    {{ bou_cli_path }} \
+		    	release \
+		    	-r {{ repo_path  }} \
+		    	-b {{ builds_path  }} \
+		    	-d {{ db_path }} \
+		    	-B {{ build_file_path }} \
+		    	$ref $pusher
+		)
+	else
+		echo "Ref $ref successfully received."
+	fi
+done
