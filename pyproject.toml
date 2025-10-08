@@ -36,3 +36,6 @@ docstring-code-line-length = "dynamic"
 members = [
     "example",
 ]
+
+[tool.zuban]
+mypy_path = "src"

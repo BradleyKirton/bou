@@ -585,7 +585,7 @@ def get_resolved_path_absolute(path: pathlib.Path | str) -> pathlib.Path:
     if path.is_absolute():
         return path
 
-    return path.resolve().absolute()
+    return path.expanduser().resolve().absolute()
 
 
 def create_or_replace_symlink(
