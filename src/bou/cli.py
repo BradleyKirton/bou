@@ -586,7 +586,11 @@ def db_handler(args: argparse.Namespace) -> None:
             sys.stdout.write(result.stdout)
             sys.stdout.flush()
 
-            time.sleep(refresh)
+            try:
+                time.sleep(refresh)
+            except KeyboardInterrupt:
+                break
+
             os.system("clear")
     else:
         subprocess.run(
