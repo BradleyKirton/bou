@@ -39,7 +39,7 @@ logging.basicConfig(level=logging.INFO)
 def init_build_system_handler(args: argparse.Namespace) -> None:
     """Create an empty build system file."""
 
-    dst = args.dst
+    build_file = args.build_file
     path = importlib.resources.files("bou") / "fpi.py"
     bou_ast = ast.parse(path.read_text())
 
@@ -154,9 +154,9 @@ def init_build_system_handler(args: argparse.Namespace) -> None:
                 continue
 
     code = ast.unparse(ast.Module(module_body))
-    dst.write_text(code)
+    build_file.write_text(code)
 
-    logger.info(f"Generated build system {dst}")
+    logger.info(f"Generated build system {build_file}")
 
     try:
         # Try and format the output with ruff
@@ -164,7 +164,7 @@ def init_build_system_handler(args: argparse.Namespace) -> None:
         environ = {}
         description = "Formatting generated code with ruff"
         error_prefix = "Failed to reformat generated file with ruff "
-        command = shlex.split(f"ruff format {dst}")
+        command = shlex.split(f"ruff format {build_file}")
 
         process = SubProcess(
             description=description,
@@ -586,7 +586,11 @@ def db_handler(args: argparse.Namespace) -> None:
             sys.stdout.write(result.stdout)
             sys.stdout.flush()
 
-            time.sleep(refresh)
+            try:
+                time.sleep(refresh)
+            except KeyboardInterrupt:
+                break
+
             os.system("clear")
     else:
         subprocess.run(
@@ -654,7 +658,9 @@ def main() -> None:
     # Init
     init_parser = subparsers.add_parser("init", help="Initialize a new build system.")
     init_parser.add_argument(
-        "dst", type=get_resolved_path_absolute, help="Destination file."
+        "build_file",
+        type=get_resolved_path_absolute,
+        help="A path where the build file will be saved.",
     )
     init_parser.set_defaults(handler=init_build_system_handler)
 
