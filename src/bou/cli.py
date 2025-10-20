@@ -10,7 +10,7 @@ import shlex
 import subprocess
 import sys
 import time
-
+from importlib.metadata import version as get_version
 from jinja2 import Environment
 
 from bou.contrib import (
@@ -639,6 +639,7 @@ def add_common_parse_args(parser: argparse.ArgumentParser) -> None:
 
 def main() -> None:
     """CLI entry-point."""
+    version = get_version("bou")
 
     allowed_log_levels = [
         "CRITICAL",
@@ -655,6 +656,13 @@ def main() -> None:
         dest="log_level",
         choices=allowed_log_levels,
         default="INFO",
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        dest="version",
+        action="version",
+        version=f"%(prog)s {version}",
     )
     subparsers = parser.add_subparsers(title="Bou", required=True)
 
