@@ -558,6 +558,9 @@ def db_handler(args: argparse.Namespace) -> None:
     refresh = args.refresh
     db_path = args.db_path
 
+    # Initialize the database if necessary
+    Db.init_with_defaults(db_path=db_path)
+
     sqlite_path = which_or_raise("sqlite3")
 
     if not query:
