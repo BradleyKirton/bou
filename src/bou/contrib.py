@@ -41,6 +41,7 @@ class ProcessState(enum.StrEnum):
     SCHEDULED = enum.auto()
     RUNNING = enum.auto()
     COMPLETE = enum.auto()
+    ABANDONED = enum.auto()
 
 
 class Db:
@@ -71,6 +72,7 @@ class Db:
             etd DATETIME NULL
         )
         """
+        # TODO: Add trigger to populate snapshot_history
         commit_history_sql = """
         CREATE TABLE IF NOT EXISTS snapshot_history (
             ref TEXT,
@@ -93,6 +95,7 @@ class Db:
             CONSTRAINT ucon_cache UNIQUE(key)
         )
         """
+
 
         with conn:
             conn.execute("PRAGMA journal_mode = WAL")
@@ -279,6 +282,40 @@ class SnapshotManager:
         params = {
             "ref_sha": ref_sha,
             "complete_state": ProcessState.COMPLETE,
+            "state": state,
+            "updated_at": current_datetime,
+            "updated_by": user,
+            "efd": current_datetime,
+        }
+        return self.db.execute_and_fetchone(
+            sql=sql, model_class=Snapshot, params=params
+        )
+
+    def abandon(
+        self,
+        snapshot: Snapshot,
+        current_datetime: datetime.datetime,
+        user: str,
+    ) -> Snapshot | None:
+        """Mark the snapshot as abandoned."""
+
+        sql = """
+        UPDATE snapshot SET
+            state = :abandoned_state,
+            updated_at = :updated_at,
+            updated_by = :updated_by,
+            efd = :efd
+        WHERE ref_sha = :ref_sha
+            AND state = :state
+        RETURNING *
+        """
+
+        ref_sha = snapshot.ref_sha
+        state = snapshot.state
+
+        params = {
+            "ref_sha": ref_sha,
+            "abandoned_state": ProcessState.ABANDONED,
             "state": state,
             "updated_at": current_datetime,
             "updated_by": user,
@@ -605,7 +642,9 @@ def sort_paths_by_last_status_change(
 
 def get_environ_from_dotenv(path: pathlib.Path) -> dict[str, str]:
     """Extract env variables from a dotenv file."""
+
     environ = {}
+
     for line_raw in path.read_text().splitlines():
         line = line_raw.strip()
 
