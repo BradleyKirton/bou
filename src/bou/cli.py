@@ -434,7 +434,7 @@ def release_handler(args: argparse.Namespace) -> None:
         snapshot = snapshot_manager.create(
             ref=ref,
             ref_sha=ref_sha,
-            action=ProcessAction.BUILD,
+            action=ProcessAction.RELEASE,
             state=ProcessState.RUNNING,
             current_datetime=current_datetime,
             user=user,
