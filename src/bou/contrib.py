@@ -72,7 +72,6 @@ class Db:
             etd DATETIME NULL
         )
         """
-        # TODO: Add trigger to populate snapshot_history
         commit_history_sql = """
         CREATE TABLE IF NOT EXISTS snapshot_history (
             ref TEXT,
@@ -87,6 +86,39 @@ class Db:
             efd DATETIME,
             etd DATETIME
         )
+        """
+        commit_history_trigger_sql = """
+        CREATE TRIGGER IF NOT EXISTS snapshot_trg
+        AFTER UPDATE ON snapshot
+        FOR EACH ROW
+        BEGIN
+            INSERT INTO snapshot_history (
+                ref,
+                ref_sha,
+                action,
+                state,
+                created_at,
+                created_by,
+                updated_at,
+                updated_by,
+                pid,
+                efd,
+                etd
+            )
+            VALUES (
+                OLD.ref,
+                OLD.ref_sha,
+                OLD.action,
+                OLD.state,
+                OLD.created_at,
+                OLD.created_by,
+                OLD.updated_at,
+                OLD.updated_by,
+                OLD.pid,
+                OLD.efd,
+                NEW.efd
+            );
+        END
         """
         cache_sql = """
         CREATE TABLE IF NOT EXISTS cache (
@@ -104,6 +136,7 @@ class Db:
 
             conn.execute(commit_sql)
             conn.execute(commit_history_sql)
+            conn.execute(commit_history_trigger_sql)
             conn.execute(cache_sql)
 
         return cls(conn)
