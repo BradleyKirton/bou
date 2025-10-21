@@ -96,7 +96,6 @@ class Db:
         )
         """
 
-
         with conn:
             conn.execute("PRAGMA journal_mode = WAL")
             conn.execute("PRAGMA synchronous = NORMAL")
@@ -692,6 +691,20 @@ def which_or_raise(executable: str) -> pathlib.Path:
         raise DependencyError(f"{executable} not found in path.")
 
     return pathlib.Path(path_raw)
+
+
+def get_uv_path_or_raise(username: pathlib.Path) -> pathlib.Path:
+    """Get the path to the uv executable for the given user.
+
+    If it does not exist raise an error.
+    """
+
+    path = pathlib.Path(f"/home/{username}/.local/bin/uv")
+
+    if not path.exists():
+        raise DependencyError("uv not found in path.")
+
+    return path
 
 
 GIT_PATH = which_or_raise("git")
