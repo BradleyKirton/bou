@@ -693,7 +693,7 @@ def which_or_raise(executable: str) -> pathlib.Path:
     return pathlib.Path(path_raw)
 
 
-def get_uv_path_or_raise(username: pathlib.Path) -> pathlib.Path:
+def get_uv_path_or_raise(username: str) -> pathlib.Path:
     """Get the path to the uv executable for the given user.
 
     If it does not exist raise an error.

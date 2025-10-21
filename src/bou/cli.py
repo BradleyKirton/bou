@@ -504,7 +504,9 @@ def release_handler(args: argparse.Namespace) -> None:
 
     if not build_path.exists():
         logger.error(f"Build for {ref_sha} does not exist, will abandon release.")
-        snapshot_manager.abandon(snapshot=snapshot, current_datetime=current_datetime)
+        snapshot_manager.abandon(
+            snapshot=snapshot, current_datetime=current_datetime, user=user
+        )
         sys.exit(1)
 
     with time_and_log(message_prefix="Pre-release execution time "):
