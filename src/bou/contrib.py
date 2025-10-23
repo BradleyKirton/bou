@@ -1,5 +1,6 @@
 """Bou utility functions."""
 
+import tempfile
 import contextlib
 import datetime
 import enum
@@ -801,6 +802,34 @@ class SubProcess:
                 error = f"{ex}"
 
             raise BuildError(f"{self.error_prefix}{error}") from ex
+
+
+def sudo_cp(
+    content: bytes,
+    target_path: pathlib.Path,
+) -> None:
+    """Restart the provided systemd service."""
+    cwd = None
+    environ = {**os.environ}
+
+    with tempfile.NamedTemporaryFile("wb") as f:
+        f.write(content)
+        f.flush()
+
+        source_path = pathlib.Path(f.name)
+        source_path
+
+        command_raw = f"sudo cp {source_path} {target_path}"
+        command = shlex.split(command_raw)
+
+        process = SubProcess(
+            description=f"Copying content to {target_path}",
+            command=command,
+            environ=environ,
+            cwd=cwd,
+            error_prefix=f"Failed to copy content to {target_path}",
+        )
+        process.run()
 
 
 def systemctl_restart(
