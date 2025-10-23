@@ -814,7 +814,6 @@ class SubProcess:
 def age_decrypt(
     target_path: pathlib.Path,
     identity_path: pathlib.Path,
-    environ: dict[str, str],
     age_path: pathlib.Path,
 ) -> str:
     """Decrypt a file with age."""
