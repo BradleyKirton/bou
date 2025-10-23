@@ -673,12 +673,12 @@ def sort_paths_by_last_status_change(
     return sorted(paths, key=lambda p: p.stat().st_ctime, reverse=reverse)
 
 
-def get_environ_from_dotenv(path: pathlib.Path) -> dict[str, str]:
+def parse_dotenv(content: str) -> dict[str, str]:
     """Extract env variables from a dotenv file."""
 
     environ = {}
 
-    for line_raw in path.read_text().splitlines():
+    for line_raw in content.splitlines():
         line = line_raw.strip()
 
         if not line:
@@ -697,6 +697,13 @@ def get_environ_from_dotenv(path: pathlib.Path) -> dict[str, str]:
         environ[name] = value
 
     return environ
+
+
+def get_environ_from_dotenv(path: pathlib.Path) -> dict[str, str]:
+    """Extract env variables from a dotenv file."""
+
+    content = path.read_text()
+    return parse_dotenv(content=content)
 
 
 def render_template_and_save(
@@ -802,6 +809,27 @@ class SubProcess:
                 error = f"{ex}"
 
             raise BuildError(f"{self.error_prefix}{error}") from ex
+
+
+def age_decrypt(
+    target_path: pathlib.Path,
+    identity_path: pathlib.Path,
+    environ: dict[str, str],
+    age_path: pathlib.Path,
+) -> str:
+    """Decrypt a file with age."""
+    cwd = None
+    environ = {**os.environ}
+    command = f"{age_path} -d -i {identity_path} {target_path}"
+
+    process = SubProcess(
+        description=f"Descrypting {target_path}",
+        command=command,
+        environ=environ,
+        cwd=cwd,
+        error_prefix=f"Failed to descrypt {target_path}",
+    )
+    return process.run()
 
 
 def sudo_cp(
