@@ -554,7 +554,7 @@ def release_handler(args: argparse.Namespace) -> None:
 
 
 def db_handler(args: argparse.Namespace) -> None:
-    table = args.table
+    history = args.history
     limit = args.limit
     order = args.order
     query = args.query
@@ -566,11 +566,10 @@ def db_handler(args: argparse.Namespace) -> None:
 
     sqlite_path = which_or_raise("sqlite3")
 
-    if table == "snapshot":
-        sql_base = "(SELECT * FROM snapshot ORDER BY ref_sha, efd)"
-    else:
+    if history:
         sql_base = "(SELECT * FROM snapshot UNION SELECT * FROM snapshot_history ORDER BY ref_sha, efd)"
-
+    else:
+        sql_base = "(SELECT * FROM snapshot ORDER BY ref_sha, efd)"
 
     if not query:
         sql = f"SELECT * FROM {sql_base} ORDER BY ref_sha, efd\n"
@@ -731,7 +730,7 @@ def main() -> None:
         help="The path to the bou database.",
         required=True,
     )
-    db_parser.add_argument("table", choices=["snapshot", "history"])
+    db_parser.add_argument("-H", "--history", action="store_true")
     db_parser.add_argument("-l", "--limit", type=int)
     db_parser.add_argument("-o", "--order", choices=["asc", "desc"])
     db_parser.add_argument("-q", "--query")
