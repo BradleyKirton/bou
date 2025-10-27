@@ -767,12 +767,16 @@ class SubProcess:
         environ: dict[str, str],
         cwd: pathlib.Path | None,
         error_prefix: str = "",
+        redact: bool = False,
+        supress_logs: bool = False,
     ) -> None:
         self.description = description
         self.command = command
         self.environ = environ
         self.cwd = cwd
         self.error_prefix = error_prefix
+        self.redact = redact
+        self.supress_logs = supress_logs
 
     def run(self) -> str:
         """Run the subprocess and log any exceptions."""
@@ -799,7 +803,14 @@ class SubProcess:
                 output = result.stdout
 
             title = self.description
-            clean_and_log(title=title, body=output)
+
+            if self.redact:
+                body = "<REDACTED>"
+            else:
+                body = output
+
+            if not self.supress_logs:
+                clean_and_log(title=command, body=body)
 
             return result.stdout
         except subprocess.SubprocessError as ex:
@@ -822,11 +833,11 @@ def age_decrypt(
     command = shlex.split(f"{age_path} -d -i {identity_path} {target_path}")
 
     process = SubProcess(
-        description=f"Descrypting {target_path}",
+        description=f"Decrypting {target_path}",
         command=command,
         environ=environ,
         cwd=cwd,
-        error_prefix=f"Failed to descrypt {target_path}",
+        error_prefix=f"Failed to decrypt {target_path}",
     )
     return process.run()
 
