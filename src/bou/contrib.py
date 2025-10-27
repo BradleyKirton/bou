@@ -897,6 +897,32 @@ def systemctl_restart(
     process.run()
 
 
+def systemctl_reload(
+    service: str,
+    sudo: bool,
+    flags: str = "",
+) -> None:
+    """Reload the provided systemd service."""
+    cwd = None
+    environ = {**os.environ}
+
+    command_raw = f"systemctl {flags} reload {service}"
+
+    if sudo:
+        command_raw = f"sudo {command_raw}"
+
+    command = shlex.split(command_raw)
+
+    process = SubProcess(
+        description="Reload systemd service",
+        command=command,
+        environ=environ,
+        cwd=cwd,
+        error_prefix="Failed to reload systemd unit ",
+    )
+    process.run()
+
+
 def systemctl_daemon_reload(
     sudo: bool,
     flags: str = "",
