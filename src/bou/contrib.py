@@ -838,6 +838,7 @@ def age_decrypt(
         environ=environ,
         cwd=cwd,
         error_prefix=f"Failed to decrypt {target_path}",
+        redact=True,
     )
     return process.run()
 
