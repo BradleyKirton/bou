@@ -819,7 +819,7 @@ def age_decrypt(
     """Decrypt a file with age."""
     cwd = None
     environ = {**os.environ}
-    command = f"{age_path} -d -i {identity_path} {target_path}"
+    command = shlex.split(f"{age_path} -d -i {identity_path} {target_path}")
 
     process = SubProcess(
         description=f"Descrypting {target_path}",
