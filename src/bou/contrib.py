@@ -1016,7 +1016,9 @@ def git_clone(
     git_path: pathlib.Path = GIT_PATH,
 ) -> None:
     """Helper for running git clone."""
-    command = shlex.split(f"{git_path} -C {repo_path} clone {repo_path} {build_path}")
+
+    # We add --no-checkout because in a post-receive hook HEAD is in an inconsistent state
+    command = shlex.split(f"{git_path} -C {repo_path} clone --no-checkout {repo_path} {build_path}")
     process = SubProcess(
         description="Running git clone",
         command=command,
