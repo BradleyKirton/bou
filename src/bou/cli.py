@@ -560,19 +560,29 @@ def db_handler(args: argparse.Namespace) -> None:
     query = args.query
     refresh = args.refresh
     db_path = args.db_path
+    fmt = args.fmt
 
     # Initialize the database if necessary
     Db.init_with_defaults(db_path=db_path)
 
     sqlite_path = which_or_raise("sqlite3")
 
-    if history:
-        sql_base = "(SELECT * FROM snapshot UNION SELECT * FROM snapshot_history ORDER BY ref_sha, efd)"
+    if fmt == "short":
+        select_cols = (
+            "ref,ref_sha,action,state,created_at,created_by,updated_at,updated_by,pid"
+        )
+        order_cols = "ref_sha"
     else:
-        sql_base = "(SELECT * FROM snapshot ORDER BY ref_sha, efd)"
+        select_cols = "*"
+        order_cols = "ref_sha, efd"
+
+    if history:
+        sql_base = f"(SELECT {select_cols} FROM snapshot UNION SELECT {select_cols} FROM snapshot_history)"
+    else:
+        sql_base = f"(SELECT {select_cols} FROM snapshot)"
 
     if not query:
-        sql = f"SELECT * FROM {sql_base} ORDER BY ref_sha, efd\n"
+        sql = f"SELECT * FROM {sql_base} ORDER BY {order_cols}\n"
     else:
         sql = f"""
         SELECT * FROM {sql_base}\n WHERE ref_sha LIKE '%{query}%'
@@ -735,6 +745,14 @@ def main() -> None:
     db_parser.add_argument("-o", "--order", choices=["asc", "desc"])
     db_parser.add_argument("-q", "--query")
     db_parser.add_argument("-r", "--refresh", type=float, default=0)
+    db_parser.add_argument(
+        "-f",
+        "--format",
+        dest="fmt",
+        type=str,
+        choices=("short", "long"),
+        default="short",
+    )
     db_parser.set_defaults(handler=db_handler)
 
     args = parser.parse_args()
