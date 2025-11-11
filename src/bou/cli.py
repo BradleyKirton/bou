@@ -23,7 +23,7 @@ from bou.contrib import (
     chmod_executable,
     get_is_bare_repo,
     get_ref_sha,
-    get_resolved_path_absolute,
+    get_resolved_absolute_path,
     is_pid_alive,
     load_module_from_path,
     time_and_log,
@@ -625,7 +625,7 @@ def add_common_parse_args(parser: argparse.ArgumentParser) -> None:
         "-B",
         "--build-file",
         dest="build_file_path",
-        type=get_resolved_path_absolute,
+        type=get_resolved_absolute_path,
         help="The path to a bou build implementation.",
         required=True,
     )
@@ -633,7 +633,7 @@ def add_common_parse_args(parser: argparse.ArgumentParser) -> None:
         "-b",
         "--builds-path",
         dest="builds_path",
-        type=get_resolved_path_absolute,
+        type=get_resolved_absolute_path,
         help="The path to builds folder.",
         required=True,
     )
@@ -641,7 +641,7 @@ def add_common_parse_args(parser: argparse.ArgumentParser) -> None:
         "-d",
         "--db-path",
         dest="db_path",
-        type=get_resolved_path_absolute,
+        type=get_resolved_absolute_path,
         help="The path to the bou database.",
         required=True,
     )
@@ -649,7 +649,7 @@ def add_common_parse_args(parser: argparse.ArgumentParser) -> None:
         "-r",
         "--repo-path",
         dest="repo_path",
-        type=get_resolved_path_absolute,
+        type=get_resolved_absolute_path,
         help="The path to the git repository.",
         required=True,
     )
@@ -688,7 +688,7 @@ def main() -> None:
     init_parser = subparsers.add_parser("init", help="Initialize a new build system.")
     init_parser.add_argument(
         "build_file",
-        type=get_resolved_path_absolute,
+        type=get_resolved_absolute_path,
         help="A path where the build file will be saved.",
     )
     init_parser.set_defaults(handler=init_build_system_handler)
@@ -701,7 +701,7 @@ def main() -> None:
         "-c",
         "--cli-path",
         dest="bou_cli_path",
-        type=get_resolved_path_absolute,
+        type=get_resolved_absolute_path,
         help="The path to the bou CLI.",
         required=True,
     )
@@ -736,7 +736,7 @@ def main() -> None:
         "-d",
         "--db-path",
         dest="db_path",
-        type=get_resolved_path_absolute,
+        type=get_resolved_absolute_path,
         help="The path to the bou database.",
         required=True,
     )

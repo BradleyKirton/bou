@@ -646,7 +646,7 @@ def load_module_from_path(path: pathlib.Path) -> ModuleType:
     return plugin_module
 
 
-def get_resolved_path_absolute(path: pathlib.Path | str) -> pathlib.Path:
+def get_resolved_absolute_path(path: pathlib.Path | str) -> pathlib.Path:
     """Get an absolute path from a posix path or string.."""
 
     if isinstance(path, str):
