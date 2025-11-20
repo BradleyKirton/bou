@@ -847,7 +847,7 @@ def sudo_cp(
     content: bytes,
     target_path: pathlib.Path,
 ) -> None:
-    """Restart the provided systemd service."""
+    """Sudo copy content to a target.."""
     cwd = None
     environ = {**os.environ}
 
@@ -869,6 +869,24 @@ def sudo_cp(
             error_prefix=f"Failed to copy content to {target_path}",
         )
         process.run()
+
+
+def sudo_chmod(target_path: pathlib.Path, mode: str) -> None:
+    """Sudo change mode."""
+    cwd = None
+    environ = {**os.environ}
+
+    command_raw = f"sudo chmod {mode} {target_path}"
+    command = shlex.split(command_raw)
+
+    process = SubProcess(
+        description=f"Changing mode for {target_path} to {mode}",
+        command=command,
+        environ=environ,
+        cwd=cwd,
+        error_prefix=f"Failed to change mode for {target_path} to {mode}",
+    )
+    process.run()
 
 
 def systemctl_restart(
@@ -1018,7 +1036,9 @@ def git_clone(
     """Helper for running git clone."""
 
     # We add --no-checkout because in a post-receive hook HEAD is in an inconsistent state
-    command = shlex.split(f"{git_path} -C {repo_path} clone --no-checkout {repo_path} {build_path}")
+    command = shlex.split(
+        f"{git_path} -C {repo_path} clone --no-checkout {repo_path} {build_path}"
+    )
     process = SubProcess(
         description="Running git clone",
         command=command,
