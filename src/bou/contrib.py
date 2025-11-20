@@ -810,7 +810,7 @@ class SubProcess:
                 body = output
 
             if not self.supress_logs:
-                clean_and_log(title=command, body=body)
+                clean_and_log(title=title, body=body)
 
             return result.stdout
         except subprocess.SubprocessError as ex:
@@ -846,6 +846,7 @@ def age_decrypt(
 def sudo_cp(
     content: bytes,
     target_path: pathlib.Path,
+    mode: str = "",
 ) -> None:
     """Sudo copy content to a target.."""
     cwd = None
@@ -867,6 +868,19 @@ def sudo_cp(
             environ=environ,
             cwd=cwd,
             error_prefix=f"Failed to copy content to {target_path}",
+        )
+        process.run()
+
+    if mode:
+        command_raw = f"sudo chmod {mode} {target_path}"
+        command = shlex.split(command_raw)
+
+        process = SubProcess(
+            description=f"Changing mode for {target_path} to {mode}",
+            command=command,
+            environ=environ,
+            cwd=cwd,
+            error_prefix=f"Failed to change mode for {target_path} to {mode}",
         )
         process.run()
 
