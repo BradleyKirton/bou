@@ -920,11 +920,11 @@ def systemctl_restart(
     command = shlex.split(command_raw)
 
     process = SubProcess(
-        description="Restart systemd service",
+        description=f"Restart systemd unit '{service}'",
         command=command,
         environ=environ,
         cwd=cwd,
-        error_prefix="Failed to restart systemd unit ",
+        error_prefix=f"Failed to restart systemd unit '{service}'",
     )
     process.run()
 
@@ -946,11 +946,11 @@ def systemctl_reload(
     command = shlex.split(command_raw)
 
     process = SubProcess(
-        description="Reload systemd service",
+        description=f"Reloading systemd unit '{service}'",
         command=command,
         environ=environ,
         cwd=cwd,
-        error_prefix="Failed to reload systemd unit ",
+        error_prefix=f"Failed to reload systemd unit '{service}'",
     )
     process.run()
 
