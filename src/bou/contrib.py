@@ -997,11 +997,11 @@ def systemctl_enable(
     command = shlex.split(command_raw)
 
     process = SubProcess(
-        description="Enable systemd service",
+        description=f"Enable systemd service {service}",
         command=command,
         environ=environ,
         cwd=cwd,
-        error_prefix="Failed to enable systemd unit ",
+        error_prefix=f"Failed to enable systemd unit {service}",
     )
     process.run()
 
