@@ -1302,7 +1302,7 @@ def make_target(
     cwd: pathlib.Path,
     target: str,
     environ: dict[str, str],
-    make_path: str,
+    make_path: pathlib.Path,
 ) -> None:
     """Run a make target."""
 
