@@ -1296,3 +1296,22 @@ def django_check(
         error_prefix="Failed to run django check ",
     )
     process.run()
+
+
+def make_target(
+    cwd: pathlib.Path,
+    target: str,
+    environ: dict[str, str],
+    make_path: str,
+) -> None:
+    """Run a make target."""
+
+    command = shlex.split(f"{make_path} -C {cwd} --quiet {target}")
+    process = SubProcess(
+        description="Running Makefile target",
+        command=command,
+        environ=environ,
+        cwd=cwd,
+        error_prefix="Failed to run Makefile target",
+    )
+    process.run()
