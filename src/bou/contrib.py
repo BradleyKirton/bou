@@ -1301,11 +1301,10 @@ def django_check(
 def make_target(
     cwd: pathlib.Path,
     target: str,
-    environ: dict[str, str],
     make_path: pathlib.Path,
 ) -> None:
     """Run a make target."""
-
+    environ = os.environ
     command = shlex.split(f"{make_path} -C {cwd} --quiet {target}")
     process = SubProcess(
         description="Running Makefile target",
